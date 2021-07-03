@@ -1,0 +1,12 @@
+.bar-graph {
+  height: 20px;
+}
+
+.pending-item {
+  width: 250px;
+  display: inline-block;
+  border: 2px solid;
+  padding: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+}
