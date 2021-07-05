@@ -247,7 +247,10 @@ function changeLog(dateStr, actGroupId) {
     dataType: "json",
     data: JSON.stringify(data),
     success: function (result) {
-      alert(result);
+      defaultFunction();
     },
+    error: function(err, mess) {
+
+    }
   });
 }

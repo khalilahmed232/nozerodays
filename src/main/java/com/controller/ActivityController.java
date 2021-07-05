@@ -26,6 +26,7 @@ import com.repo.ActGroupRepo;
 import com.repo.ActivityRepo;
 
 import vo.ChangeVO;
+import vo.ResultVO;
 
 @RestController
 @RequestMapping("/activitylogs")
@@ -147,7 +148,7 @@ public class ActivityController {
 	}
 
 	@PostMapping("/change")
-	public HashSet<ActGroup> changeActivityLog(@RequestBody ChangeVO changeVO) {
+	public ResponseEntity<?> changeActivityLog(@RequestBody ChangeVO changeVO) {
 		System.out.println(changeVO);
 
 		String dateStr = changeVO.getDateStr();
@@ -170,7 +171,8 @@ public class ActivityController {
 			activityLog.setActGroup(actGroup);
 			this.save(activityLog);
 		}
-		HashSet<ActGroup> allActivityGroups = null;
-		return allActivityGroups;
+		ResultVO resultVO = new ResultVO();
+		resultVO.setMessage("done");
+		return ResponseEntity.ok().body(resultVO);
 	}
 }
