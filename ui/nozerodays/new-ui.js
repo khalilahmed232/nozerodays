@@ -201,10 +201,8 @@ function createMainTableData({ activityGroups, activitylogslast7days }) {
         mainHtml += "<td> ❌";
       }
 
-      var done = activityGroupsMap[actGroup.id][currentDateStr] === true;
-
       mainHtml += `
-        <a href='#' onclick="changeLog('${currentDateStr}','${actGroup.id}','${done}')"> Change </a> </td>`;
+        <a href='#' onclick="changeLog('${currentDateStr}','${actGroup.id}')"> Change </a> </td>`;
 
       currentDate.setDate(currentDate.getDate() + 1);
 
@@ -236,35 +234,20 @@ function dateToStr(date) {
   return str;
 }
 
-function changeLog(currentDateStr, actGroupId, done) {
-  if (done) {
-    // delete
-    $.ajax({
-      type: "DELETE",
-      url: BACKEND_URL + "activitylogs/" + actGroupId,
-      success: function (result) {
-        showAllActivites();
-      },
-    });
-  } else {
-    var data = {
-      actGroup: {
-        id: payload.actGroup.id,
-      },
-      createdDate: $("#activityLoggedDate").val(),
-    };
-    var id = $("#activityId").val();
-    $.ajax({
-      type: "PUT",
-      url: BACKEND_URL + "activitylogs/" + id,
-      contentType: "application/json",
-      dataType: "json",
-      data: JSON.stringify(data),
-      success: function (result) {
-        showAllActivites();
-      },
-    });
-  }
+function changeLog(dateStr, actGroupId) {
+  var data = {
+    actGroupId,
+    dateStr,
+  };
 
-  alert("heellooooo");
+  $.ajax({
+    type: "POST",
+    url: BACKEND_URL + "activitylogs/change",
+    contentType: "application/json",
+    dataType: "json",
+    data: JSON.stringify(data),
+    success: function (result) {
+      alert(result);
+    },
+  });
 }
