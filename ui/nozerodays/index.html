@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
     <script src="script.js"></script>
@@ -13,9 +14,19 @@
     <ul>
         <li><a href="#">Home</a></li>
         <li><a href="/last-7-days.html">Last 7 days</a></li>
-        <li><a href="/last-30-days.html">Last 30 days</a></li>
+        <li><a href="https://docs.google.com/spreadsheets/d/1wb729JIsWWtBx7ZE7syMxEo2oCJcFqGn75a-kdbjydk/edit#gid=0" target="_blank" rel="noopener noreferrer">weights</a></li>
+        <li><a href="https://docs.google.com/spreadsheets/d/1UbYEuxCwcO8DCsCw5wcrG-G-tiYDP5MkaG4xmGEBLFg/edit#gid=0" target="_blank" rel="noopener noreferrer">Reps</a></li>
+        <li><a href="https://docs.google.com/spreadsheets/d/15c-NbP2-0bc1lEVwaLbnlDu6tvqft36o/edit#gid=1492518554">Pending Tasks count by half hour</a></li>
+        <li><a href="/shopping-list.html">Shopping list</a></li>
     </ul>
+    <section>
+        <button id="getPending"> Get </button> Pending tasks 
+        <ol id="PendingToday">
+            
+        </ol>
 
+    </section>
+    <section>
     <h1>Activities</h1>
     <button id="addActivityBtn" > Add </button>
     <section id="addActivityForm" >
@@ -27,8 +38,7 @@
                 </div>
                 Category
             <select name="" id="actionDoneSelect">
-                <option value="CODING">CODING</option>
-                <option value="SLEEP_FOR_6_HOURS">SLEEP_FOR_6_HOURS</option>
+                
             </select>
                 current date
                 <input type="date" name="" id="activityLoggedDate">
@@ -37,6 +47,8 @@
             </form>
         </fieldset>
     </section>
+    </section>
+
     <table id="activityTable">
         <th>
             <td>Id</td>
@@ -44,6 +56,5 @@
             <td>Date</td>
         </th>
     </table>
-
 </body>
 </html>
