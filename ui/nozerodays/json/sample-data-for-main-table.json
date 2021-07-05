@@ -1,0 +1,12 @@
+{
+  "data": [
+    {
+      "activityGroupName": "BATHE",
+      "last7days": [false, false, false, false, false, false, false]
+    },
+    {
+      "activityGroupName": "BRUSH",
+      "last7days": [false, false, false, false, false, false, false]
+    }
+  ]
+}
