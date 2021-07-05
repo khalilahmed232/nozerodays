@@ -1,6 +1,9 @@
 package com.controller;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +24,8 @@ import com.entity.ActGroup;
 import com.entity.ActivityLog;
 import com.repo.ActGroupRepo;
 import com.repo.ActivityRepo;
+
+import vo.ChangeVO;
 
 @RestController
 @RequestMapping("/activitylogs")
@@ -138,6 +143,34 @@ public class ActivityController {
 				allActivityGroups.add(eachActivityGrp);
 			}
 		}
+		return allActivityGroups;
+	}
+
+	@PostMapping("/change")
+	public HashSet<ActGroup> changeActivityLog(@RequestBody ChangeVO changeVO) {
+		System.out.println(changeVO);
+
+		String dateStr = changeVO.getDateStr();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			changeVO.setCeatedDate(new java.sql.Date(dateFormat.parse(dateStr).getTime()));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		List<ActivityLog> activitLogList = activityRepo.findActivityByGroupAndDate(changeVO.getCeatedDate(),
+				changeVO.getActGroupId());
+		if (activitLogList.size() > 0) {
+			for (ActivityLog actLog : activitLogList) {
+				this.delete(actLog.id);
+			}
+		} else {
+			ActivityLog activityLog = new ActivityLog();
+			ActGroup actGroup = new ActGroup();
+			actGroup.setId(changeVO.getActGroupId());
+			activityLog.setActGroup(actGroup);
+			this.save(activityLog);
+		}
+		HashSet<ActGroup> allActivityGroups = null;
 		return allActivityGroups;
 	}
 }

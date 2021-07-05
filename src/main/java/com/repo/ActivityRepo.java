@@ -17,4 +17,9 @@ public interface ActivityRepo extends JpaRepository<ActivityLog, Long> {
 	@Query("select a from ActivityLog a where a.createdDate >= :creationTimeStart and a.createdDate <= :creationTimeEnd and a.actGroup.id = :act_group_id")
 	List<ActivityLog> findCompletedActForActGroup(@Param("creationTimeStart") Date creationTimeStart,
 			@Param("creationTimeEnd") Date creationTimeEnd, @Param("act_group_id") Long act_group_id);
+
+	@Query("select a from ActivityLog a where a.createdDate = :creationTime and a.actGroup.id = :act_group_id")
+	List<ActivityLog> findActivityByGroupAndDate(@Param("creationTime") Date creationTime,
+			@Param("act_group_id") Long act_group_id);
+
 }
