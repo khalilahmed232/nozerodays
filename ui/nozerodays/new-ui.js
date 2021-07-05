@@ -5,117 +5,6 @@ $(document).ready(function () {
   defaultFunction();
 });
 
-function getAndShowPendingTasks() {
-  $.ajax({
-    type: "GET",
-    url: BACKEND_URL + "activitylogs/PendingToday",
-    success: function (result) {
-      pendingTasks = result;
-      pendingTasks = pendingTasks.sort((a, b) =>
-        a.sortIndex > b.sortIndex ? 1 : -1
-      );
-
-      showPendingTasks();
-    },
-  });
-}
-
-function mySubmitFunction(event) {
-  return false;
-}
-
-function showAllActivites() {
-  $("#addActivityForm").hide();
-  $.ajax({
-    type: "GET",
-    url: BACKEND_URL + "activitylogs",
-    success: function (result) {
-      var html = "";
-      $("#activityTable").html(`<th>
-        <td>Id</td>
-        <td>Group</td>
-        <td>Date</td>
-      </th>`);
-      result.forEach((element) => {
-        var elementStr = JSON.stringify(element);
-        html += `<tr> 
-          <td> ${element.id} </td> 
-          <td> ${element.actGroup.name} </td> 
-          <td> ${element.createdDate} </td> 
-          <td> <button onclick='editActivity(${elementStr})'>Edit</button> </td>
-          <td> <button onclick="deleteActivity(${element.id})">Delete</button> </td> 
-        </tr>`;
-      });
-      $("#activityTable").html(html);
-    },
-  });
-  showPendingTasks();
-}
-
-function deleteActivity(id) {
-  $.ajax({
-    type: "DELETE",
-    url: BACKEND_URL + "activitylogs/" + id,
-    success: function (result) {
-      showAllActivites();
-    },
-  });
-}
-
-function editActivity(activity) {
-  $("#actionDoneSelect").val(activity.actGroup.id);
-  $("#activityLoggedDate").val(activity.createdDate);
-  $("#addActivityForm").css({ display: "block" });
-  $("#activityId").val(activity.id);
-  $(".editActivity").css({ display: "block" });
-  $("#addActivitySubmitBtn").css({ display: "none" });
-}
-
-function fetchActiivtyGroups() {
-  $.ajax({
-    type: "GET",
-    url: BACKEND_URL + "activitylogs/getActivityGroups",
-    success: function (result) {
-      var html = "";
-      result.forEach((actGroup) => {
-        html += `<option value="${actGroup.id}">${actGroup.name}</option>`;
-      });
-      $("#actionDoneSelect").html(html);
-    },
-  });
-}
-
-function showPendingTasks() {
-  var html = "";
-  pendingTasks.forEach((actGroup, i) => {
-    html += `<li><p class="pending-item" >${actGroup.name}</p> 
-    <button onclick="completedToday('${actGroup.id}')">Completed Today</button>  
-  </li>`;
-  });
-  $("#PendingToday").html(html);
-}
-
-function completedToday(actGroupId) {
-  var data = {
-    createdDate: getCurrentDate(),
-    actGroup: {
-      id: actGroupId,
-    },
-  };
-
-  $.ajax({
-    type: "POST",
-    url: BACKEND_URL + "activitylogs",
-    contentType: "application/json",
-    dataType: "json",
-    data: JSON.stringify(data),
-    success: function (result) {
-      showAllActivites();
-      getAndShowPendingTasks();
-    },
-  });
-}
-
 function getCurrentDate() {
   return dateToStr(new Date());
 }
@@ -160,7 +49,10 @@ async function defaultFunction() {
 
 function createMainTableData({ activityGroups, activitylogslast7days }) {
   let activityGroupsMap = {};
-  activityGroups.forEach((val) => (activityGroupsMap[val.id] = val));
+  activityGroups.forEach(function (val) {
+    activityGroupsMap[val.id] = val;
+    activityGroupsMap[val.id]["count"] = 0;
+  });
 
   console.dir(activityGroupsMap);
 
@@ -168,6 +60,9 @@ function createMainTableData({ activityGroups, activitylogslast7days }) {
     console.log(val.createdDate);
     console.log(new Date(val.createdDate));
     activityGroupsMap[val.actGroup.id][val.createdDate] = true;
+    if (activityGroupsMap[val.actGroup.id][val.createdDate] === true) {
+      activityGroupsMap[val.actGroup.id]["count"] += 1;
+    }
     console.log(val);
   });
 
@@ -182,9 +77,15 @@ function createMainTableData({ activityGroups, activitylogslast7days }) {
     mainHtml += "<td> " + currentDate.getDate() + " </td>";
     currentDate.setDate(currentDate.getDate() + 1);
   }
+  mainHtml += "<td> Count </td>";
+  mainHtml += "<td> Percentage </td>";
 
   mainHtml += "</thead>";
   mainHtml += "<tbody>";
+
+  activityGroups = activityGroups.sort(function (a, b) {
+    return a.sortIndex - b.sortIndex;
+  });
 
   activityGroups.forEach(function (actGroup) {
     mainHtml += "<tr>";
@@ -200,14 +101,16 @@ function createMainTableData({ activityGroups, activitylogslast7days }) {
       } else {
         mainHtml += "<td> ❌";
       }
-
       mainHtml += `
-        <a href='#' onclick="changeLog('${currentDateStr}','${actGroup.id}')"> Change </a> </td>`;
-
+        <a onclick="changeLog('${currentDateStr}','${actGroup.id}')"> Change </a> </td>`;
       currentDate.setDate(currentDate.getDate() + 1);
-
       console.log(currentDate);
     }
+    mainHtml += "<td> " + activityGroupsMap[actGroup.id]["count"] + " </td>";
+    mainHtml +=
+      "<td> " +
+      Math.round((activityGroupsMap[actGroup.id]["count"] / 7) * 100) +
+      " </td>";
 
     mainHtml += "</tr>";
   });
@@ -235,6 +138,7 @@ function dateToStr(date) {
 }
 
 function changeLog(dateStr, actGroupId) {
+  var y = window.scrollY;
   var data = {
     actGroupId,
     dateStr,
@@ -246,11 +150,9 @@ function changeLog(dateStr, actGroupId) {
     contentType: "application/json",
     dataType: "json",
     data: JSON.stringify(data),
-    success: function (result) {
+    success: function () {
       defaultFunction();
     },
-    error: function(err, mess) {
-
-    }
+    error: function (err, mess) {},
   });
 }

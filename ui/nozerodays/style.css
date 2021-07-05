@@ -10,3 +10,20 @@
   border-radius: 8px;
   font-weight: 600;
 }
+
+td:first-child {
+  width: 200px;
+}
+
+td {
+  width: 90px;
+}
+
+body {
+  max-width: 70%;
+}
+
+td:last-child,
+td:nth-last-child(2) {
+  text-align: right;
+}

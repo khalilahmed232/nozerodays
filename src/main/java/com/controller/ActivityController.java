@@ -165,10 +165,11 @@ public class ActivityController {
 				this.delete(actLog.id);
 			}
 		} else {
-			ActivityLog activityLog = new ActivityLog();
 			ActGroup actGroup = new ActGroup();
 			actGroup.setId(changeVO.getActGroupId());
+			ActivityLog activityLog = new ActivityLog();
 			activityLog.setActGroup(actGroup);
+			activityLog.setCreatedDate(changeVO.getCeatedDate());
 			this.save(activityLog);
 		}
 		ResultVO resultVO = new ResultVO();
