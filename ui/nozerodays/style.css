@@ -10,8 +10,10 @@
   border-radius: 8px;
   font-weight: 600;
 }
-
-td:first-child {
+td:nth-child(1) {
+  width: 40px;
+}
+td:nth-child(2) {
   width: 200px;
 }
 
@@ -22,8 +24,8 @@ td {
 body {
   max-width: 70%;
 }
-
-td:last-child,
+td:nth-child(1),
+td:nth-last-child(1),
 td:nth-last-child(2) {
   text-align: right;
 }

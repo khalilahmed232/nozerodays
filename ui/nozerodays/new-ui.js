@@ -40,10 +40,6 @@ async function activitylogs7daysFn() {
 async function defaultFunction() {
   var activityGroups = await fetchActiivtyGroupsAsync();
   var activitylogslast7days = await activitylogs7daysFn();
-
-  console.table(activityGroups);
-  console.table(activitylogslast7days);
-
   createMainTableData({ activityGroups, activitylogslast7days });
 }
 
@@ -54,21 +50,17 @@ function createMainTableData({ activityGroups, activitylogslast7days }) {
     activityGroupsMap[val.id]["count"] = 0;
   });
 
-  console.dir(activityGroupsMap);
-
   activitylogslast7days.forEach(function (val) {
-    console.log(val.createdDate);
-    console.log(new Date(val.createdDate));
     activityGroupsMap[val.actGroup.id][val.createdDate] = true;
     if (activityGroupsMap[val.actGroup.id][val.createdDate] === true) {
       activityGroupsMap[val.actGroup.id]["count"] += 1;
     }
-    console.log(val);
   });
 
   var mainHtml = "<table>";
 
   mainHtml += "<thead>";
+  mainHtml += "<td> Sort Index </td>";
   mainHtml += "<td> Group Name </td>";
 
   var currentDate = new Date();
@@ -87,24 +79,27 @@ function createMainTableData({ activityGroups, activitylogslast7days }) {
     return a.sortIndex - b.sortIndex;
   });
 
+  var todayCount = 0;
   activityGroups.forEach(function (actGroup) {
     mainHtml += "<tr>";
+    mainHtml += "<td>" + actGroup.sortIndex + "</td>";
     mainHtml += "<td>" + actGroup.name + "</td>";
 
     var currentDate = new Date();
     currentDate.setDate(currentDate.getDate() - 6);
     for (var i = 0; i < 7; i++) {
-      console.log(currentDate);
       var currentDateStr = dateToStr(currentDate);
       if (activityGroupsMap[actGroup.id][currentDateStr] === true) {
         mainHtml += "<td> ✅";
       } else {
         mainHtml += "<td> ❌";
+        if (i == 6) {
+          todayCount++;
+        }
       }
       mainHtml += `
         <a onclick="changeLog('${currentDateStr}','${actGroup.id}')"> Change </a> </td>`;
       currentDate.setDate(currentDate.getDate() + 1);
-      console.log(currentDate);
     }
     mainHtml += "<td> " + activityGroupsMap[actGroup.id]["count"] + " </td>";
     mainHtml +=
@@ -114,13 +109,16 @@ function createMainTableData({ activityGroups, activitylogslast7days }) {
 
     mainHtml += "</tr>";
   });
+
+  $("#PendingTasks").html(
+    "<h1>" + todayCount + " tasks are pending today.</h1>"
+  );
+
   mainHtml += "</tbody>";
 
   mainHtml += "</table>";
 
   $("#main-new-table").html(mainHtml);
-  console.dir(activityGroupsMap);
-  console.table(activityGroupsMap);
 }
 function dateToStr(date) {
   var str = date.getFullYear() + "-";
