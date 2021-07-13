@@ -1,5 +1,14 @@
+body {
+  max-width: 100%;
+  font-family: Verdana, Geneva, sans-serif;
+}
+
 .bar-graph {
   height: 20px;
+}
+
+:root {
+  --highlight-color: #f2f2f2;
 }
 
 .pending-item {
@@ -10,22 +19,49 @@
   border-radius: 8px;
   font-weight: 600;
 }
+
+table {
+  width: 100%;
+}
+
 td:nth-child(1) {
   width: 40px;
 }
+
 td:nth-child(2) {
   width: 200px;
 }
 
 td {
   width: 90px;
+  padding: 10px;
 }
 
-body {
-  max-width: 70%;
-}
 td:nth-child(1),
 td:nth-last-child(1),
 td:nth-last-child(2) {
   text-align: right;
+}
+
+tr:hover {
+  background-color: var(--highlight-color);
+}
+td,
+th {
+  position: relative;
+}
+td:hover::after,
+th:hover::after {
+  content: "";
+  position: absolute;
+  background-color: var(--highlight-color);
+  left: 0;
+  top: -5000px;
+  height: 10000px;
+  width: 100%;
+  z-index: -1;
+}
+
+a:hover {
+  cursor: pointer;
 }

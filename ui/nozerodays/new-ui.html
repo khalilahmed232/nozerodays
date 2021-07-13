@@ -3,10 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"
-    />
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"></script>
     <script src="new-ui.js"></script>
@@ -39,6 +35,15 @@
         >
       </li>
       <li><a href="/shopping-list.html">Shopping list</a></li>
+    </ul>
+
+    <hr />
+
+    <ul>
+      <li><a onclick="defaultFunction({ status: 'ALL'})">default</a></li>
+      <li>
+        <a onclick="defaultFunction({ status: 'PENDING'})">pending today</a>
+      </li>
     </ul>
 
     <div id="PendingTasks"></div>

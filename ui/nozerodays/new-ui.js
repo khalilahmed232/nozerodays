@@ -1,8 +1,9 @@
 var BACKEND_URL = "http://192.168.0.182:8080/";
 var pendingTasks = [];
+var NO_OF_DAYS_TO_SHOW = 7;
 
 $(document).ready(function () {
-  defaultFunction();
+  defaultFunction({ status: "ALL" });
 });
 
 function getCurrentDate() {
@@ -37,13 +38,17 @@ async function activitylogs7daysFn() {
   return activitylogs.json();
 }
 
-async function defaultFunction() {
+async function defaultFunction(options) {
   var activityGroups = await fetchActiivtyGroupsAsync();
   var activitylogslast7days = await activitylogs7daysFn();
-  createMainTableData({ activityGroups, activitylogslast7days });
+  createMainTableData({ activityGroups, activitylogslast7days, options });
 }
 
-function createMainTableData({ activityGroups, activitylogslast7days }) {
+function createMainTableData({
+  activityGroups,
+  activitylogslast7days,
+  options,
+}) {
   let activityGroupsMap = {};
   activityGroups.forEach(function (val) {
     activityGroupsMap[val.id] = val;
@@ -57,10 +62,10 @@ function createMainTableData({ activityGroups, activitylogslast7days }) {
     }
   });
 
-  var mainHtml = "<table>";
+  var mainHtml = "<table> ";
 
   mainHtml += "<thead>";
-  mainHtml += "<td> Sort Index </td>";
+  mainHtml += "<td> S No  </td>";
   mainHtml += "<td> Group Name </td>";
 
   var currentDate = new Date();
@@ -81,33 +86,41 @@ function createMainTableData({ activityGroups, activitylogslast7days }) {
 
   var todayCount = 0;
   activityGroups.forEach(function (actGroup) {
-    mainHtml += "<tr>";
-    mainHtml += "<td>" + actGroup.sortIndex + "</td>";
-    mainHtml += "<td>" + actGroup.name + "</td>";
-
     var currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() - 6);
-    for (var i = 0; i < 7; i++) {
-      var currentDateStr = dateToStr(currentDate);
-      if (activityGroupsMap[actGroup.id][currentDateStr] === true) {
-        mainHtml += "<td> ✅";
-      } else {
-        mainHtml += "<td> ❌";
-        if (i == 6) {
-          todayCount++;
-        }
-      }
-      mainHtml += `
-        <a onclick="changeLog('${currentDateStr}','${actGroup.id}')"> Change </a> </td>`;
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    mainHtml += "<td> " + activityGroupsMap[actGroup.id]["count"] + " </td>";
-    mainHtml +=
-      "<td> " +
-      Math.round((activityGroupsMap[actGroup.id]["count"] / 7) * 100) +
-      " </td>";
+    var currentDateStr = dateToStr(currentDate);
 
-    mainHtml += "</tr>";
+    if (
+      (options.status == "PENDING" &&
+        activityGroupsMap[actGroup.id][currentDateStr] === undefined) ||
+      options.status == "ALL"
+    ) {
+      mainHtml += "<tr>";
+      mainHtml += "<td>" + actGroup.sortIndex + "</td>";
+      mainHtml += "<td>" + actGroup.name + "</td>";
+
+      currentDate.setDate(currentDate.getDate() - 6);
+      for (var i = 0; i < 7; i++) {
+        currentDateStr = dateToStr(currentDate);
+        if (activityGroupsMap[actGroup.id][currentDateStr] === true) {
+          mainHtml += "<td> ✅";
+        } else {
+          mainHtml += "<td> ❌";
+          if (i == 6) {
+            todayCount++;
+          }
+        }
+        mainHtml += `
+        <a onclick="changeLog('${currentDateStr}','${actGroup.id}')"> Change </a> </td>`;
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      mainHtml += "<td> " + activityGroupsMap[actGroup.id]["count"] + " </td>";
+      mainHtml +=
+        "<td> " +
+        Math.round((activityGroupsMap[actGroup.id]["count"] / 7) * 100) +
+        " </td>";
+
+      mainHtml += "</tr>";
+    }
   });
 
   $("#PendingTasks").html(
@@ -149,7 +162,7 @@ function changeLog(dateStr, actGroupId) {
     dataType: "json",
     data: JSON.stringify(data),
     success: function () {
-      defaultFunction();
+      defaultFunction({ status: "ALL" });
     },
     error: function (err, mess) {},
   });
